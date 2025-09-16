@@ -3,6 +3,11 @@ using UnityEngine;
 
 public class Estudiante : MonoBehaviour
 {
+    //COMUNICACION CON LAS REFERENCIAS DE LA ESCENA
+
+    public ManagerUI UIM;
+    public GameManager gm;
+
     //ATRIBUTOS
     //------------------------------------------------------
     private string nombre;
