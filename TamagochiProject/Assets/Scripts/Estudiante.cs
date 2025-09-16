@@ -93,8 +93,10 @@ public class Estudiante : MonoBehaviour
     //METODOS DEL ESTUDIANTE
     //======================================================
     //------------------------------------------------------
+    //asdjkaosnfoqwf
     public void jugar()
     {
+        Debug.Log("esta jugando");
         Debug.Log("esta jugando");
     }
     public void comer()
