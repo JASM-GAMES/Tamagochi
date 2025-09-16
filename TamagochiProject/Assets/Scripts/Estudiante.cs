@@ -103,9 +103,12 @@ public class Estudiante : MonoBehaviour
     {
         Debug.Log("esta comiendo");
     }
+
+    //Mecanica para dormir tomada por eduardo
     public void dormir()
     {
         Debug.Log("esta durmiendo");
+        Debug.Log("PRUEBA TEXTO...... LALALALALA");
     }
     public void estudiar()
     {
