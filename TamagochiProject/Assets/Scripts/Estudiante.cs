@@ -10,13 +10,17 @@ public class Estudiante : MonoBehaviour
     private int hambre;
     private int diversion;
     private int estres;
-    private int sueño;
+    private int sueno;
     private int social;
 
     //START
     //------------------------------------------------------
     void Start()
     {
+        // valores iniciales para probar los metodos
+        sueno = 50;
+        hambre = 30;
+
         jugar();
         comer();
         dormir();
@@ -27,7 +31,11 @@ public class Estudiante : MonoBehaviour
     }
     private void Update()
     {
-
+        // Presiona la tecla D para que el estudiante duerma y ver los cambios en el hambre y el sueño
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            dormir();
+        }
     }
 
     //SETTERS Y GETTERS
@@ -72,13 +80,13 @@ public class Estudiante : MonoBehaviour
     {
         return estres;
     }
-    public void setSueño(int sueño)
+    public void setSueno(int sueno)
     {
-        this.sueño = sueño;
+        this.sueno = sueno;
     }
-    public int getSueño()
+    public int getSueno()
     {
-        return sueño;
+        return sueno;
     }
     public void setSocial(int social)
     {
@@ -107,8 +115,24 @@ public class Estudiante : MonoBehaviour
     //Mecanica para dormir tomada por eduardo
     public void dormir()
     {
-        Debug.Log("esta durmiendo");
-        Debug.Log("PRUEBA TEXTO...... LALALALALA");
+        int cantidadDormida = 40; // Cantidad que recupera al dormir
+        int hambreAumentada = 15; // Dormir da hambre
+
+        // Disminuir el sueño y aumentar el hambre
+        sueno -= cantidadDormida;
+        hambre += hambreAumentada;
+
+        // Limitar los valores entre 0 y 100
+        if (sueno > 100) sueno = 100;
+        if (hambre > 100) hambre = 100;
+        // limitar los valores para que no sean negativos
+        if (sueno < 0) sueno = 0;
+        if (hambre < 0) hambre = 0;
+
+        Debug.Log("Esta durmiendo...");
+        Debug.Log("\n");
+        Debug.Log("Sueño actual: " + sueno);
+        Debug.Log("Hambre actual: " + hambre);
     }
     public void estudiar()
     {
