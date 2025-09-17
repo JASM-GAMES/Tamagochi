@@ -50,8 +50,8 @@ public class Estudiante : MonoBehaviour
     }
     private void Update()
     {
-        // Presiona la tecla D para que el estudiante duerma y ver los cambios en el hambre y el sueño
-        if (Input.GetKeyDown(KeyCode.D))
+        // Presiona la tecla Z para que el estudiante duerma y ver los cambios en el hambre y el sueño
+        if (Input.GetKeyDown(KeyCode.Z))
         {
         
             dormir();
