@@ -15,7 +15,7 @@ public class Estudiante : MonoBehaviour
     private int hambre;
     private int diversion;
     private int estres;
-    private int sueño;
+    private int sueno;
     private int social;
 
     //START
@@ -77,13 +77,13 @@ public class Estudiante : MonoBehaviour
     {
         return estres;
     }
-    public void setSueño(int sueño)
+    public void setSueno(int sueño)
     {
-        this.sueño = sueño;
+        this.sueno = sueño;
     }
-    public int getSueño()
+    public int getSueno()
     {
-        return sueño;
+        return sueno;
     }
     public void setSocial(int social)
     {
