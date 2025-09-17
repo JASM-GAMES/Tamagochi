@@ -286,11 +286,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   estudiante: {fileID: 413522132}
   gameManager: {fileID: 768096466}
-  textoHambre: {fileID: 0}
-  textoSueno: {fileID: 0}
-  textoDiversion: {fileID: 0}
-  textoEstres: {fileID: 0}
-  textoSocial: {fileID: 0}
+  textoHambre: {fileID: 288777713}
+  textoSueno: {fileID: 1748945482}
+  textoDiversion: {fileID: 508360472}
+  textoEstres: {fileID: 859584249}
+  textoSocial: {fileID: 1530600547}
   textoTiempo: {fileID: 84930968}
 --- !u!4 &227595532
 Transform:
@@ -808,6 +808,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73b43bfc80cd6dc4583102a9eb5469f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UIM: {fileID: 0}
+  gm: {fileID: 0}
 --- !u!212 &413522133
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1314,6 +1316,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73b43bfc80cd6dc4583102a9eb5469f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UIM: {fileID: 0}
+  gm: {fileID: 0}
 --- !u!212 &794418165
 SpriteRenderer:
   m_ObjectHideFlags: 0

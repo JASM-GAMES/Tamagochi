@@ -31,7 +31,7 @@ public class ManagerUI : MonoBehaviour
         
     }
 
-    public void mostrarTiempo()
+    public void actualizarTiempo()
     {
         minuto = gameManager.GetMinuto().ToString();
         hora = gameManager.GetHora().ToString();
@@ -39,4 +39,14 @@ public class ManagerUI : MonoBehaviour
         textoTiempo.text = $"Día: {gameManager.GetDia()+1} - {gameManager.GetHora():00}:{gameManager.GetMinuto():00}";
     }
 
+    public void actualizarNecesidades()
+    {
+
+        textoHambre.text = estudiante.getHambre().ToString();
+        textoSueno.text = estudiante.getSueno().ToString();
+        textoDiversion.text = estudiante.getDiversion().ToString();
+        textoEstres.text = estudiante.getEstres().ToString();
+        textoSocial.text = estudiante.getSocial().ToString();
+
+    }
 }

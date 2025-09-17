@@ -39,7 +39,8 @@ public class GameManager : MonoBehaviour
             timer = 0f;
         }
         // Se conecta al UI
-        UIM.mostrarTiempo();
+        UIM.actualizarTiempo();
+        UIM.actualizarNecesidades();
     }
     //sirve para avanzar el tiempo y mostrarlo en la UI
     private void AvanzarMinuto()

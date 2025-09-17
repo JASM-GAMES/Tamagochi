@@ -43,14 +43,14 @@ public class Estudiante : MonoBehaviour
                   "| BIENVENIDO |" +
                   "|============|");
         Debug.Log("Hambre: " + hambre);
-        Debug.Log("Sueño: " + sueno);
+        Debug.Log("SueÃ±o: " + sueno);
         Debug.Log("Diversion: " + diversion);
         Debug.Log("Estres: " + estres);
         Debug.Log("Social: " + social);
     }
     private void Update()
     {
-        // Presiona la tecla D para que el estudiante duerma y ver los cambios en el hambre y el sueño
+        // Presiona la tecla D para que el estudiante duerma y ver los cambios en el hambre y el sueÃ±o
         if (Input.GetKeyDown(KeyCode.D))
         {
         
@@ -138,14 +138,14 @@ public class Estudiante : MonoBehaviour
         int cantidadDormida = 40; // Cantidad que recupera al dormir
         int hambreAumentada = 15; // Dormir da hambre
 
-        // Disminuir el sueño y aumentar el hambre
+        // Disminuir el sueÃ±o y aumentar el hambre
         sueno -= cantidadDormida;
         hambre += hambreAumentada;
         // Valida los limites de los atributos en cada accion
         validarAtrinutos();
 
         Debug.Log("Esta durmiendo...");
-        Debug.Log("Sueño actual: " + sueno);
+        Debug.Log("SueÃ±o actual: " + sueno);
         Debug.Log("Hambre actual: " + hambre);
     }
     public void validarAtrinutos() 
@@ -154,7 +154,7 @@ public class Estudiante : MonoBehaviour
 
         //hambre
         hambre = Mathf.Clamp(hambre, 0, 100);
-        //sueño
+        //sueÃ±o
         sueno = Mathf.Clamp(sueno, 0, 100);
         //diversion
         diversion = Mathf.Clamp(diversion, 0, 100);
