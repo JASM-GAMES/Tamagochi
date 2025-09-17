@@ -22,17 +22,40 @@ public class Estudiante : MonoBehaviour
     //------------------------------------------------------
     void Start()
     {
-        jugar();
-        comer();
-        dormir();
-        estudiar();
-        hacerTrabajo();
-        irUniversidad();
-        chatear();
+        // valores iniciales para probar los metodos
+        sueno = 50;
+        hambre = 30;
+        diversion = 0;
+        estres = 80;
+        social = 20;
+
+        // no es necesario llamar a los metodos en el start, solo es para probarlos
+        //jugar();
+        //comer();
+        //dormir();
+        //estudiar();
+        //hacerTrabajo();
+        //irUniversidad();
+        //chatear();
+
+        // Menu para mostrar atributos inciados al ejecutar el juego
+        Debug.Log("|============|" +
+                  "| BIENVENIDO |" +
+                  "|============|");
+        Debug.Log("Hambre: " + hambre);
+        Debug.Log("Sueño: " + sueno);
+        Debug.Log("Diversion: " + diversion);
+        Debug.Log("Estres: " + estres);
+        Debug.Log("Social: " + social);
     }
     private void Update()
     {
-
+        // Presiona la tecla D para que el estudiante duerma y ver los cambios en el hambre y el sueño
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+        
+            dormir();
+        }
     }
 
     //SETTERS Y GETTERS
@@ -77,9 +100,9 @@ public class Estudiante : MonoBehaviour
     {
         return estres;
     }
-    public void setSueno(int sue�o)
+    public void setSueno(int sueno)
     {
-        this.sueno = sue�o;
+        this.sueno = sueno;
     }
     public int getSueno()
     {
@@ -98,17 +121,47 @@ public class Estudiante : MonoBehaviour
     //METODOS DEL ESTUDIANTE
     //======================================================
     //------------------------------------------------------
+    //asdjkaosnfoqwf
     public void jugar()
     {
+        Debug.Log("esta jugando");
         Debug.Log("esta jugando");
     }
     public void comer()
     {
         Debug.Log("esta comiendo");
     }
+
+    //Mecanica para dormir tomada por eduardo
     public void dormir()
     {
-        Debug.Log("esta durmiendo");
+        int cantidadDormida = 40; // Cantidad que recupera al dormir
+        int hambreAumentada = 15; // Dormir da hambre
+
+        // Disminuir el sueño y aumentar el hambre
+        sueno -= cantidadDormida;
+        hambre += hambreAumentada;
+        // Valida los limites de los atributos en cada accion
+        validarAtrinutos();
+
+        Debug.Log("Esta durmiendo...");
+        Debug.Log("Sueño actual: " + sueno);
+        Debug.Log("Hambre actual: " + hambre);
+    }
+    public void validarAtrinutos() 
+    {
+        // Mathf.Clamp() cumple la misma funcion que un if, pero en una sola linea de codigo, es mas efectivo para mantener valores en un establecido
+
+        //hambre
+        hambre = Mathf.Clamp(hambre, 0, 100);
+        //sueño
+        sueno = Mathf.Clamp(sueno, 0, 100);
+        //diversion
+        diversion = Mathf.Clamp(diversion, 0, 100);
+        //estres
+        estres = Mathf.Clamp(estres, 0, 100);
+        //social
+        social = Mathf.Clamp(social, 0, 100);
     }
     public void estudiar()
     {
