@@ -1,16 +1,17 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class ManagerUI : MonoBehaviour
 {
     public Estudiante estudiante;
     public GameManager gameManager;
 
-    public TMP_Text textoHambre;
-    public TMP_Text textoSueno;
-    public TMP_Text textoDiversion;
-    public TMP_Text textoEstres;
-    public TMP_Text textoSocial;
+    public Slider sliderHambre;
+    public Slider sliderSueno;
+    public Slider sliderDiversion;
+    public Slider sliderEstres;
+    public Slider sliderSocial;
 
     public TMP_Text textoTiempo;
 
@@ -42,11 +43,12 @@ public class ManagerUI : MonoBehaviour
     public void actualizarNecesidades()
     {
 
-        textoHambre.text = estudiante.getHambre().ToString();
-        textoSueno.text = estudiante.getSueno().ToString();
-        textoDiversion.text = estudiante.getDiversion().ToString();
-        textoEstres.text = estudiante.getEstres().ToString();
-        textoSocial.text = estudiante.getSocial().ToString();
+        sliderHambre.value = estudiante.getHambre();
+        sliderSueno.value = estudiante.getSueno();
+        sliderDiversion.value = estudiante.getDiversion();
+        sliderEstres.value = estudiante.getEstres();
+        sliderSocial.value = estudiante.getSocial();
+
 
     }
 }
