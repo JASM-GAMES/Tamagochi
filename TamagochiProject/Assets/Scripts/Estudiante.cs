@@ -24,10 +24,10 @@ public class Estudiante : MonoBehaviour
     {
         // valores iniciales para probar los metodos
         sueno = 50;
-        hambre = 30;
-        diversion = 0;
-        estres = 80;
-        social = 20;
+        hambre = 50;
+        diversion = 50;
+        estres = 50;
+        social = 50;
 
         // no es necesario llamar a los metodos en el start, solo es para probarlos
         //jugar();
@@ -121,7 +121,7 @@ public class Estudiante : MonoBehaviour
     //METODOS DEL ESTUDIANTE
     //======================================================
     //------------------------------------------------------
-    //asdjkaosnfoqwf
+    //
     public void jugar()
     {
         Debug.Log("esta jugando");
@@ -138,9 +138,9 @@ public class Estudiante : MonoBehaviour
         int cantidadDormida = 40; // Cantidad que recupera al dormir
         int hambreAumentada = 15; // Dormir da hambre
 
-        // Disminuir el sueño y aumentar el hambre
-        sueno -= cantidadDormida;
-        hambre += hambreAumentada;
+        // Aumenta la barra de sueño y disminuye la barra de hambre
+        sueno += cantidadDormida;
+        hambre -= hambreAumentada;
         // Valida los limites de los atributos en cada accion
         validarAtrinutos();
 
@@ -180,4 +180,5 @@ public class Estudiante : MonoBehaviour
         Debug.Log("esta chateando");
     }
     //------------------------------------------------------
+
 }
