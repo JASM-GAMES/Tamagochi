@@ -3,10 +3,7 @@ using UnityEngine;
 
 public class MecanicaJuego : MonoBehaviour
 {
-    public GameManager gM; // Reference to the GameManager script
-    public Estudiante estudiante; // Reference to the Estudiante script
     public ManagerUI UIM; // Reference to the ManagerUI script
-    public PlayerController playerController; // Reference to the PlayerController script
     public Interactuable interactuable; // Reference to the Interactuable script
 
     public float inicioZona = 0.4f; // Duration of the mechanic in seconds

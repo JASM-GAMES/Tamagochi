@@ -18,9 +18,7 @@ public class Interactuable : MonoBehaviour
     public int cambiarEstresFracaso;
     public int cambiarSocialFracaso;
 
-
     public string mensaje = "|E|";
-    public UnityEvent onInteract;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -53,6 +51,7 @@ public class Interactuable : MonoBehaviour
 
     public void Interactuar()
     {
+        mecanicaJuego.interactuable = this; // <- le decimos quién es el objeto actual
         mecanicaJuego.gameObject.SetActive(true);
     }
 }

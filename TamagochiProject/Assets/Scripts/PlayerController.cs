@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour
         if (collision.TryGetComponent(out Interactuable interactuable))
         {
             interactuableActual = interactuable;
+            Debug.Log("interactuable actual: "+interactuableActual);
         }
     }
 
@@ -52,6 +53,7 @@ public class PlayerController : MonoBehaviour
         if (collision.TryGetComponent(out Interactuable interactuable) && interactuable == interactuableActual)
         {
             interactuableActual = null;
+            Debug.Log("interactuable actual: " + interactuableActual);
         }
     }
 
