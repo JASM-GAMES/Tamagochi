@@ -2,24 +2,57 @@ using UnityEngine;
 using UnityEngine.Events;
 public class Interactuable : MonoBehaviour
 {
+    public MecanicaJuego mecanicaJuego;
+    public Estudiante estudiante;
+
+    // Cambios en las necesidades al interactuar (éxito)
+    public int cambiarHambreExito;
+    public int cambiarSuenoExito;
+    public int cambiarDiversionExito;
+    public int cambiarEstresExito;
+    public int cambiarSocialExito;
+    // Cambios en las necesidades al interactuar (fracaso)
+    public int cambiarHambreFracaso;
+    public int cambiarSuenoFracaso;
+    public int cambiarDiversionFracaso;
+    public int cambiarEstresFracaso;
+    public int cambiarSocialFracaso;
+
+
     public string mensaje = "|E|";
     public UnityEvent onInteract;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        //mensaje de debug para ver con que estoy interactuando
-        Debug.Log("Interactuable detectó algo: " + other.name);
         if (other.CompareTag("Estudiante"))
         {
-            // mensaje de debug para ver que es el estudiante
-            Debug.Log("Interactuable: es el estudiante");
             Debug.Log(mensaje);
             // Aquí podrías mostrar un UI prompt en pantalla
         }
     }
 
+    public void cambiarAtributos()
+    {
+        if (mecanicaJuego.getExito())
+        {
+            estudiante.setHambre(estudiante.getHambre() + cambiarHambreExito);
+            estudiante.setSueno(estudiante.getSueno() + cambiarSuenoExito);
+            estudiante.setDiversion(estudiante.getDiversion() + cambiarDiversionExito);
+            estudiante.setEstres(estudiante.getEstres() + cambiarEstresExito);
+            estudiante.setSocial(estudiante.getSocial() + cambiarSocialExito);
+        }
+        else
+        {
+            estudiante.setHambre(estudiante.getHambre() - cambiarHambreFracaso);
+            estudiante.setSueno(estudiante.getSueno() - cambiarSuenoFracaso);
+            estudiante.setDiversion(estudiante.getDiversion() - cambiarDiversionFracaso);
+            estudiante.setEstres(estudiante.getEstres() - cambiarEstresFracaso);
+            estudiante.setSocial(estudiante.getSocial() - cambiarSocialFracaso);
+        }
+    }
+
     public void Interactuar()
     {
-        onInteract?.Invoke();
+        mecanicaJuego.gameObject.SetActive(true);
     }
 }

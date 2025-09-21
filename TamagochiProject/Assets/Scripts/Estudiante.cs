@@ -129,14 +129,16 @@ public class Estudiante : MonoBehaviour
     }
     public void comer()
     {
-        Debug.Log("esta comiendo");
+        int cantidadComida = 10;
+        hambre += cantidadComida;
+        validarAtrinutos();
     }
 
     //Mecanica para dormir tomada por eduardo
     public void dormir()
     {
-        int cantidadDormida = 40; // Cantidad que recupera al dormir
-        int hambreAumentada = 15; // Dormir da hambre
+        int cantidadDormida = 10; // Cantidad que recupera al dormir
+        int hambreAumentada = 2; // Dormir da hambre
 
         // Aumenta la barra de sueño y disminuye la barra de hambre
         sueno += cantidadDormida;
