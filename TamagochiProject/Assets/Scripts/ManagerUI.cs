@@ -3,9 +3,12 @@ using TMPro;
 using UnityEngine.UI;
 
 public class ManagerUI : MonoBehaviour
-{
+{   
     public Estudiante estudiante;
     public GameManager gameManager;
+
+    public Image zonaVerde;
+    public Slider sliderMecanicaBarra;
 
     public Slider sliderHambre;
     public Slider sliderSueno;
@@ -19,19 +22,6 @@ public class ManagerUI : MonoBehaviour
     private string hora;
     private string dia;
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void actualizarTiempo()
     {
         minuto = gameManager.GetMinuto().ToString();
@@ -42,13 +32,21 @@ public class ManagerUI : MonoBehaviour
 
     public void actualizarNecesidades()
     {
-
         sliderHambre.value = estudiante.getHambre();
         sliderSueno.value = estudiante.getSueno();
         sliderDiversion.value = estudiante.getDiversion();
         sliderEstres.value = estudiante.getEstres();
         sliderSocial.value = estudiante.getSocial();
-
-
     }
+
+    public void activarMecanicaBarra()
+    {
+        sliderMecanicaBarra.gameObject.SetActive(true);
+    }
+
+    public void desactivarMecanicaBarra()
+    {
+        sliderMecanicaBarra.gameObject.SetActive(false);
+    }
+
 }
