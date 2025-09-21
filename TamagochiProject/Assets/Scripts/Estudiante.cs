@@ -29,15 +29,6 @@ public class Estudiante : MonoBehaviour
         estres = 50;
         social = 50;
 
-        // no es necesario llamar a los metodos en el start, solo es para probarlos
-        //jugar();
-        //comer();
-        //dormir();
-        //estudiar();
-        //hacerTrabajo();
-        //irUniversidad();
-        //chatear();
-
         // Menu para mostrar atributos inciados al ejecutar el juego
         Debug.Log("|============|" +
                   "| BIENVENIDO |" +
@@ -50,12 +41,6 @@ public class Estudiante : MonoBehaviour
     }
     private void Update()
     {
-        // Presiona la tecla Z para que el estudiante duerma y ver los cambios en el hambre y el sueño
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-        
-            dormir();
-        }
     }
 
     //SETTERS Y GETTERS
@@ -116,40 +101,6 @@ public class Estudiante : MonoBehaviour
     {
         return social;
     }
-    //------------------------------------------------------
-    //======================================================
-    //METODOS DEL ESTUDIANTE
-    //======================================================
-    //------------------------------------------------------
-    //
-    public void jugar()
-    {
-        Debug.Log("esta jugando");
-        Debug.Log("esta jugando");
-    }
-    public void comer()
-    {
-        int cantidadComida = 10;
-        hambre += cantidadComida;
-        validarAtrinutos();
-    }
-
-    //Mecanica para dormir tomada por eduardo
-    public void dormir()
-    {
-        int cantidadDormida = 10; // Cantidad que recupera al dormir
-        int hambreAumentada = 2; // Dormir da hambre
-
-        // Aumenta la barra de sueño y disminuye la barra de hambre
-        sueno += cantidadDormida;
-        hambre -= hambreAumentada;
-        // Valida los limites de los atributos en cada accion
-        validarAtrinutos();
-
-        Debug.Log("Esta durmiendo...");
-        Debug.Log("Sueño actual: " + sueno);
-        Debug.Log("Hambre actual: " + hambre);
-    }
     public void validarAtrinutos() 
     {
         // Mathf.Clamp() cumple la misma funcion que un if, pero en una sola linea de codigo, es mas efectivo para mantener valores en un establecido
@@ -165,22 +116,7 @@ public class Estudiante : MonoBehaviour
         //social
         social = Mathf.Clamp(social, 0, 100);
     }
-    public void estudiar()
-    {
-        Debug.Log("esta estudiando");
-    }
-    public void hacerTrabajo()
-    {
-        Debug.Log("esta haciendo el trabajo");
-    }
-    public void irUniversidad()
-    {
-        Debug.Log("se fue a la universidad");
-    }
-    public void chatear()
-    {
-        Debug.Log("esta chateando");
-    }
+
     //------------------------------------------------------
 
 }
