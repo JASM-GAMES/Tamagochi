@@ -2,59 +2,98 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movimiento")]
+    public float velocidadMovimiento = 5f;
+    public float sensibilidadMouse = 2f;
+
+    [Header("Interacción")]
+    public float distanciaInteraccion = 3f; // hasta dónde puede interactuar
     private Interactuable interactuableActual;
 
-    public float velocidadMovimiento = 5f;
+    [Header("Opciones")]
+    public bool bloquearCursor = true;
 
-    private Rigidbody2D rb;
-    private Vector2 input;
+    private float rotacionX = 0f;
+    private Rigidbody rb;
+    private Camera cam;
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        rb.gravityScale = 0;        // No gravedad en 2D top-down
-        rb.freezeRotation = true;   // Que no rote al chocar
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true; // evita que la física gire el jugador
+        cam = GetComponentInChildren<Camera>();
+    }
+
+    void Start()
+    {
+        if (bloquearCursor)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     void Update()
     {
-        // Interacción
+        RotarCamara();
+        DetectarInteractuable();
+
+        // Si hay algo interactuable en la mira y presionamos E
         if (Input.GetKeyDown(KeyCode.E) && interactuableActual != null)
         {
             interactuableActual.Interactuar();
         }
-        // Lee input con WASD / flechas
-        input.x = Input.GetAxisRaw("Horizontal");
-        input.y = Input.GetAxisRaw("Vertical");
-        input = input.normalized;
     }
 
     void FixedUpdate()
     {
-        // Movimiento físico
-        rb.MovePosition(rb.position + input * velocidadMovimiento * Time.fixedDeltaTime);
-
+        MoverJugador();
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+
+    private void RotarCamara()
     {
-        //mensaje de debug para ver con que estoy interactuando
-        Debug.Log("estoy interactuando: "+collision);
-        if (collision.TryGetComponent(out Interactuable interactuable))
+        float mouseX = Input.GetAxis("Mouse X") * sensibilidadMouse;
+        float mouseY = Input.GetAxis("Mouse Y") * sensibilidadMouse;
+
+        rotacionX -= mouseY;
+        rotacionX = Mathf.Clamp(rotacionX, -90f, 90f);
+
+        cam.transform.localRotation = Quaternion.Euler(rotacionX, 0f, 0f);
+        transform.Rotate(Vector3.up * mouseX);
+    }
+
+    private void MoverJugador()
+    {
+        float x = Input.GetAxisRaw("Horizontal");
+        float z = Input.GetAxisRaw("Vertical");
+
+        Vector3 direccion = (transform.right * x + transform.forward * z).normalized;
+        Vector3 nuevaPosicion = rb.position + direccion * velocidadMovimiento * Time.fixedDeltaTime;
+
+        rb.MovePosition(nuevaPosicion);
+    }
+
+    private void DetectarInteractuable()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, distanciaInteraccion))
         {
-            interactuableActual = interactuable;
-            Debug.Log("interactuable actual: "+interactuableActual);
+            if (hit.collider.TryGetComponent(out Interactuable interactuable))
+            {
+                if (interactuable != interactuableActual)
+                {
+                    interactuableActual = interactuable;
+                    Debug.Log("Mirando interactuable: " + interactuable.name);
+                }
+                return;
+            }
         }
-    }
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        //mensaje de debug para ver con que ya no estoy interactuando
-        Debug.Log(" no estoy interactuando: " + collision);
-        if (collision.TryGetComponent(out Interactuable interactuable) && interactuable == interactuableActual)
+        // Si no estamos mirando un interactuable
+        if (interactuableActual != null)
         {
             interactuableActual = null;
-            Debug.Log("interactuable actual: " + interactuableActual);
+            Debug.Log("Ya no miro interactuable");
         }
     }
-
 }
