@@ -7,6 +7,8 @@ public class ManagerUI : MonoBehaviour
     public Estudiante estudiante;
     public GameManager gameManager;
 
+    public GameObject MensajeInteractuar;
+
     public Image zonaVerde;
     public Slider sliderMecanicaBarra;
 
@@ -49,4 +51,12 @@ public class ManagerUI : MonoBehaviour
         sliderMecanicaBarra.gameObject.SetActive(false);
     }
 
+    public void activarMensajeInteractuar()
+    {
+        MensajeInteractuar.gameObject.SetActive(true);
+    }
+    public void desactivarMensajeInteractuar()
+    {
+        MensajeInteractuar.gameObject.SetActive(false);
+    }
 }
