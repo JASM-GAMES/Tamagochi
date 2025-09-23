@@ -11,21 +11,15 @@ public class GameManager : MonoBehaviour
     public int horasActual;    // 0 - 23
     public int diaActual;     // 0 en adelante
 
-    [Header("Configuración")]
-    private float segundosXMinutos = 1f; // 1 seg real = 1 min juego
-
     [Header("Referencias")]
     public Estudiante estudiante;
 
-    [Header("Configuración de Necesidades")]
-    public ConfigNecesidades config;
-
-    [HideInInspector] public float SegundosXMinutos;
-    [HideInInspector] public float tiempoXHambre;
-    [HideInInspector] public float tiempoXSueno;
-    [HideInInspector] public float tiempoXDiversion;
-    [HideInInspector] public float tiempoXEstres;
-    [HideInInspector] public float tiempoXSocial;
+    public float segundosXMinutos;
+    public float tiempoXHambre;
+    public float tiempoXSueno;
+    public float tiempoXDiversion;
+    public float tiempoXEstres;
+    public float tiempoXSocial;
 
     public ManagerUI UIM;
 
@@ -42,8 +36,6 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-        // Inicializa con valores base
-        RestaurarValoresBase();
     }
     private void Update()
     {
@@ -89,21 +81,6 @@ public class GameManager : MonoBehaviour
                 diaActual++;
             }
         }
-    }
-    public void RestaurarValoresBase()
-    {
-        if (config == null)
-        {
-            Debug.LogError("⚠ No hay ConfigNecesidades asignado en GameManager.");
-            return;
-        }
-
-        SegundosXMinutos = config.velocidadTiempoBase;
-        tiempoXHambre = config.hambreBase;
-        tiempoXSueno = config.suenoBase;
-        tiempoXDiversion = config.diversionBase;
-        tiempoXEstres = config.estresBase;
-        tiempoXSocial = config.socialBase;
     }
 }
 

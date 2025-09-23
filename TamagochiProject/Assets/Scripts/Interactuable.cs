@@ -9,14 +9,12 @@ using System;
 public class Interactuable : MonoBehaviour
 {
     [Header("Refs")]
-    public MecanicaJuego mecanicaJuego;      // Referencia a la mecánica de barra
-    public Estudiante estudiante;            // Referencia al estudiante que se ve afectado
-
-    [Header("Preset de necesidades (ScriptableObject)")]
-    public ConfigNecesidades presetBase;     // ScriptableObject con valores base de necesidades y velocidad de tiempo
+    public MecanicaJuego mecanicaJuego;      
+    public Estudiante estudiante;
+    public GameManager gM;
 
     [Header("Modificar Velocidad Tiempo")]
-    public float modificarVelocidadTiempo = 1f;
+    public float modificarVelocidadTiempo;
 
     [Header("Cambios en necesidades por éxito")]
     public int cambiarHambreExito;
@@ -47,13 +45,13 @@ public class Interactuable : MonoBehaviour
     private float prevHambre, prevSueno, prevDiversion, prevEstres, prevSocial;
 
     // Autoasignar GameManager si es null
-    private GameManager gM;
+
 
     private void Awake()
     {
         // Intentar encontrar el GameManager en la escena
         if (gM == null)
-            gM = GameManager.Instance ?? FindObjectOfType<GameManager>();
+            gM = GameManager.Instance ?? FindFirstObjectByType<GameManager>();
     }
 
     /// <summary>
@@ -113,16 +111,11 @@ public class Interactuable : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Método que reacciona al estado del minijuego (jugando o no).
-    /// Aquí aplicamos los cambios pasivos en las necesidades y velocidad del tiempo.
-    /// </summary>
-    /// <param name="jugando">True si el minijuego está activo, False si terminó.</param>
     private void EstadoMinijuego(bool jugando)
     {
         if (gM == null)
         {
-            gM = GameManager.Instance ?? FindObjectOfType<GameManager>();
+            gM = GameManager.Instance ?? FindFirstObjectByType<GameManager>();
             if (gM == null)
             {
                 Debug.LogWarning("Interactuable: no hay GameManager en la escena.");
@@ -133,25 +126,25 @@ public class Interactuable : MonoBehaviour
         if (jugando)
         {
             // Guardar valores previos antes de modificar
-            prevSegundosXMinutos = gM.SegundosXMinutos;
+            prevSegundosXMinutos = gM.segundosXMinutos;
             prevHambre = gM.tiempoXHambre;
             prevSueno = gM.tiempoXSueno;
             prevDiversion = gM.tiempoXDiversion;
             prevEstres = gM.tiempoXEstres;
             prevSocial = gM.tiempoXSocial;
 
-            // Aplica valores pasivos usando presetBase como fallback si el valor es 0
-            gM.SegundosXMinutos = (modificarVelocidadTiempo != 0) ? modificarVelocidadTiempo : presetBase.velocidadTiempoBase;
-            gM.tiempoXHambre = (cambiarHambrePasivo != 0) ? cambiarHambrePasivo : presetBase.hambreBase;
-            gM.tiempoXSueno = (cambiarSuenoPasivo != 0) ? cambiarSuenoPasivo : presetBase.suenoBase;
-            gM.tiempoXDiversion = (cambiarDiversionPasivo != 0) ? cambiarDiversionPasivo : presetBase.diversionBase;
-            gM.tiempoXEstres = (cambiarEstresPasivo != 0) ? cambiarEstresPasivo : presetBase.estresBase;
-            gM.tiempoXSocial = (cambiarSocialPasivo != 0) ? cambiarSocialPasivo : presetBase.socialBase;
+            // Aplica valores pasivos usando presetBase
+            gM.segundosXMinutos = modificarVelocidadTiempo;
+            gM.tiempoXHambre = cambiarHambrePasivo;
+            gM.tiempoXDiversion = cambiarDiversionPasivo;
+            gM.tiempoXSueno = cambiarSuenoPasivo;
+            gM.tiempoXEstres = cambiarEstresPasivo;
+            gM.tiempoXSocial = cambiarSocialPasivo;
         }
         else
         {
             // Restaurar valores previos
-            gM.SegundosXMinutos = prevSegundosXMinutos;
+            gM.segundosXMinutos = prevSegundosXMinutos;
             gM.tiempoXHambre = prevHambre;
             gM.tiempoXSueno = prevSueno;
             gM.tiempoXDiversion = prevDiversion;
