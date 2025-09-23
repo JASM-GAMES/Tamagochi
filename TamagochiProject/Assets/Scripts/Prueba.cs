@@ -7,6 +7,7 @@ public class Prueba : MonoBehaviour
     {
         //asjdklajsldjlasjfl
         Debug.Log("esta es una prueba");
+        Debug.Log("esta es la segunda prueba lalalalalalalalalal");
     }
 
     // Update is called once per frame
