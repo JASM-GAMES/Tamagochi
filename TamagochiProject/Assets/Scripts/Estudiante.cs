@@ -10,13 +10,19 @@ public class Estudiante : MonoBehaviour
 
     //ATRIBUTOS
     //------------------------------------------------------
-    private string nombre;
-    private int edad;
-    private int hambre;
-    private int diversion;
-    private int estres;
-    private int sueno;
-    private int social;
+    private float hambre;
+    private float diversion;
+    private float estres;
+    private float sueno;
+    private float social;
+
+    //SETTERS Y GETTERS
+    //------------------------------------------------------
+    public float Hambre { get => hambre; set => hambre = value; }
+    public float Diversion { get => diversion; set => diversion = value; }
+    public float Estres { get => estres; set => estres = value; }
+    public float Sueno { get => sueno; set => sueno = value; }
+    public float Social { get => social; set => social = value; }
 
     //START
     //------------------------------------------------------
@@ -28,79 +34,13 @@ public class Estudiante : MonoBehaviour
         diversion = 50;
         estres = 50;
         social = 50;
-
-        // Menu para mostrar atributos inciados al ejecutar el juego
-        Debug.Log("|============|" +
-                  "| BIENVENIDO |" +
-                  "|============|");
-        Debug.Log("Hambre: " + hambre);
-        Debug.Log("Sueño: " + sueno);
-        Debug.Log("Diversion: " + diversion);
-        Debug.Log("Estres: " + estres);
-        Debug.Log("Social: " + social);
     }
     private void Update()
     {
     }
 
-    //SETTERS Y GETTERS
-    //------------------------------------------------------
-    public void setNombre(string nombre)
-    {
-        this.nombre = nombre;
-    }
-    public string getNombre()
-    {
-        return nombre;
-    }
-    public void setEdad(int edad)
-    {
-        this.edad = edad;
-    }
-    public int getEdad()
-    {
-        return edad;
-    }
-    public void setHambre(int hambre)
-    {
-        this.hambre = hambre;
-    }
-    public int getHambre()
-    {
-        return hambre;
-    }
-    public void setDiversion(int diversion)
-    {
-        this.diversion = diversion;
-    }
-    public int getDiversion()
-    {
-        return diversion;
-    }
-    public void setEstres(int estres)
-    {
-        this.estres = estres;
-    }
-    public int getEstres()
-    {
-        return estres;
-    }
-    public void setSueno(int sueno)
-    {
-        this.sueno = sueno;
-    }
-    public int getSueno()
-    {
-        return sueno;
-    }
-    public void setSocial(int social)
-    {
-        this.social = social;
-    }
-    public int getSocial()
-    {
-        return social;
-    }
+
+
     public void validarAtrinutos() 
     {
         // Mathf.Clamp() cumple la misma funcion que un if, pero en una sola linea de codigo, es mas efectivo para mantener valores en un establecido
@@ -116,7 +56,5 @@ public class Estudiante : MonoBehaviour
         //social
         social = Mathf.Clamp(social, 0, 100);
     }
-
-    //------------------------------------------------------
 
 }
