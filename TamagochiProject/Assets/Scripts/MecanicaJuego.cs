@@ -16,6 +16,12 @@ public class MecanicaJuego : MonoBehaviour
     private float valorActual;
     private bool jugando;
 
+    // EVENTOS 🚀
+    public event Action<bool> OnResultado; // true = éxito, false = fracaso
+    public event Action<bool> OnEstadoJuego; // true = empezó, false = terminó
+
+    public bool Jugando => jugando; // 👈 Propiedad para saber si está en juego desde fuera
+
     public bool getExito()
     {
         return exito;
@@ -28,9 +34,14 @@ public class MecanicaJuego : MonoBehaviour
 
     void OnEnable()
     {
-        IniciarMinijuego();
+        IniciarMinijuego(); // 👈 cada vez que el objeto se activa, reinicia todo
     }
 
+    void OnDisable()
+    {
+        jugando = false;
+        OnEstadoJuego?.Invoke(false); // 👈 avisa que terminó
+    }
     void Update()
     {
         if (!jugando) return;
@@ -56,14 +67,11 @@ public class MecanicaJuego : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             ChequearResultado();
-            interactuable.cambiarAtributos();
+            Debug.Log(exito ? "¡Éxito!" : "Fallaste");
         }
 
-        // Cancelar mecánica si el jugador se mueve
         if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
-        {
             CancelarMinijuego();
-        }
     }
 
     public void IniciarMinijuego()
@@ -72,6 +80,7 @@ public class MecanicaJuego : MonoBehaviour
         direccionBarra = 1;
         jugando = true;
         ActualizarZonaVerde();
+        OnEstadoJuego?.Invoke(true); // Aviso: empezó el minijuego
     }
 
     private void ActualizarZonaVerde()
@@ -93,28 +102,20 @@ public class MecanicaJuego : MonoBehaviour
 
     }
 
-    public void ChequearResultado()
+    private void ChequearResultado()
     {
-        if (valorActual >= inicioZona && valorActual <= inicioZona + tamañoZona)
-        {
-            Debug.Log("¡Éxito!");
-            // Aquí puedes llamar a GameManager o sumar puntos
-            ActualizarZonaVerde();
-            exito = true;   
-        }
-        else
-        {        
-            Debug.Log("Fallaste");
-            // Aquí penalizas al jugador
-            ActualizarZonaVerde();
-            exito = false;
-        }
+        bool exitoActual = valorActual >= inicioZona && valorActual <= inicioZona + tamañoZona;
+        exito = exitoActual;
+
+        Debug.Log(exito ? "¡Éxito!" : "Fallaste");
+        ActualizarZonaVerde();
+
+        // 🚀 Disparamos el evento con el resultado
+        OnResultado?.Invoke(exito);
     }
     public void CancelarMinijuego()
     {
-        Debug.Log("Minijuego cancelado");
-        jugando = false;
-        gameObject.SetActive(false); // Oculta panel si lo estás mostrando en UI
+        gameObject.SetActive(false); // 👈 desactiva el objeto → llama OnDisable()
     }
     private void TerminarMinijuego(bool exito)
     {
