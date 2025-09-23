@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+
     [Header("Movimiento")]
     public float velocidadMovimiento = 5f;
     public float sensibilidadMouse = 2f;
@@ -16,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private float rotacionX = 0f;
     private Rigidbody rb;
     private Camera cam;
+    public ManagerUI mui;
 
     void Awake()
     {
@@ -84,6 +86,7 @@ public class PlayerController : MonoBehaviour
                 {
                     interactuableActual = interactuable;
                     Debug.Log("Mirando interactuable: " + interactuable.name);
+                    mui.activarMensajeInteractuar();
                 }
                 return;
             }
@@ -94,6 +97,7 @@ public class PlayerController : MonoBehaviour
         {
             interactuableActual = null;
             Debug.Log("Ya no miro interactuable");
+            mui.desactivarMensajeInteractuar();
         }
     }
 }
