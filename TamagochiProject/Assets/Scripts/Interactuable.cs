@@ -1,57 +1,193 @@
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
+using System;
+
+/// <summary>
+/// Script para objetos interactuables que lanzan minijuegos de barra (MecanicaJuego)
+/// y afectan las necesidades del estudiante. Compatible con ScriptableObjects
+/// para valores base de las necesidades y velocidad de tiempo.
+/// </summary>
 public class Interactuable : MonoBehaviour
 {
-    public MecanicaJuego mecanicaJuego;
-    public Estudiante estudiante;
+    [Header("Refs")]
+    public MecanicaJuego mecanicaJuego;      // Referencia a la mecánica de barra
+    public Estudiante estudiante;            // Referencia al estudiante que se ve afectado
 
-    // Cambios en las necesidades al interactuar (�xito)
+    [Header("Preset de necesidades (ScriptableObject)")]
+    public ConfigNecesidades presetBase;     // ScriptableObject con valores base de necesidades y velocidad de tiempo
+
+    [Header("Modificar Velocidad Tiempo")]
+    public float modificarVelocidadTiempo = 1f;
+
+    [Header("Cambios en necesidades por éxito")]
     public int cambiarHambreExito;
     public int cambiarSuenoExito;
     public int cambiarDiversionExito;
     public int cambiarEstresExito;
     public int cambiarSocialExito;
-    // Cambios en las necesidades al interactuar (fracaso)
+
+    [Header("Cambios en necesidades por fracaso")]
     public int cambiarHambreFracaso;
     public int cambiarSuenoFracaso;
     public int cambiarDiversionFracaso;
     public int cambiarEstresFracaso;
     public int cambiarSocialFracaso;
 
-    public string mensaje = "|E|";
+    [Header("Cambios en necesidades pasivos durante la interacción")]
+    public float cambiarHambrePasivo;
+    public float cambiarSuenoPasivo;
+    public float cambiarDiversionPasivo;
+    public float cambiarEstresPasivo;
+    public float cambiarSocialPasivo;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    // flags internos
+    private bool suscrito = false;
+
+    // Guardar valores previos para restaurar
+    private float prevSegundosXMinutos;
+    private float prevHambre, prevSueno, prevDiversion, prevEstres, prevSocial;
+
+    // Autoasignar GameManager si es null
+    private GameManager gM;
+
+    private void Awake()
     {
-        if (other.CompareTag("Estudiante"))
-        {
-            Debug.Log(mensaje);
-            // Aqu� podr�as mostrar un UI prompt en pantalla
-        }
+        // Intentar encontrar el GameManager en la escena
+        if (gM == null)
+            gM = GameManager.Instance ?? FindObjectOfType<GameManager>();
     }
 
-    public void cambiarAtributos()
+    /// <summary>
+    /// Llamado por el Player cuando presiona E frente al objeto.
+    /// Inicia la mecánica y suscribe eventos.
+    /// </summary>
+    public void Interactuar()
     {
-        if (mecanicaJuego.getExito())
+        if (mecanicaJuego == null)
         {
-            estudiante.setHambre(estudiante.getHambre() + cambiarHambreExito);
-            estudiante.setSueno(estudiante.getSueno() + cambiarSuenoExito);
-            estudiante.setDiversion(estudiante.getDiversion() + cambiarDiversionExito);
-            estudiante.setEstres(estudiante.getEstres() + cambiarEstresExito);
-            estudiante.setSocial(estudiante.getSocial() + cambiarSocialExito);
+            Debug.LogWarning("Interactuable: falta referencia a MecanicaJuego en " + name);
+            return;
+        }
+
+        mecanicaJuego.interactuable = this;
+
+        // Suscribirse solo si no está suscrito
+        if (!suscrito)
+        {
+            mecanicaJuego.OnEstadoJuego += EstadoMinijuego;
+            mecanicaJuego.OnResultado += CambiarAtributos;
+            suscrito = true;
+        }
+
+        // Activar la mecánica (OnEnable -> IniciarMinijuego)
+        mecanicaJuego.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// Método que se ejecuta cuando la barra da resultado de éxito o fracaso.
+    /// Modifica las necesidades del estudiante según el resultado.
+    /// </summary>
+    /// <param name="exito">True si la barra fue exitosa, False si falló.</param>
+    public void CambiarAtributos(bool exito)
+    {
+        if (estudiante == null)
+        {
+            Debug.LogWarning("Interactuable: falta referencia a Estudiante en " + name);
+            return;
+        }
+
+        if (exito)
+        {
+            estudiante.Hambre += cambiarHambreExito;
+            estudiante.Sueno += cambiarSuenoExito;
+            estudiante.Diversion += cambiarDiversionExito;
+            estudiante.Estres += cambiarEstresExito;
+            estudiante.Social += cambiarSocialExito;
         }
         else
         {
-            estudiante.setHambre(estudiante.getHambre() - cambiarHambreFracaso);
-            estudiante.setSueno(estudiante.getSueno() - cambiarSuenoFracaso);
-            estudiante.setDiversion(estudiante.getDiversion() - cambiarDiversionFracaso);
-            estudiante.setEstres(estudiante.getEstres() - cambiarEstresFracaso);
-            estudiante.setSocial(estudiante.getSocial() - cambiarSocialFracaso);
+            estudiante.Hambre -= cambiarHambreFracaso;
+            estudiante.Sueno -= cambiarSuenoFracaso;
+            estudiante.Diversion -= cambiarDiversionFracaso;
+            estudiante.Estres -= cambiarEstresFracaso;
+            estudiante.Social -= cambiarSocialFracaso;
         }
     }
 
-    public void Interactuar()
+    /// <summary>
+    /// Método que reacciona al estado del minijuego (jugando o no).
+    /// Aquí aplicamos los cambios pasivos en las necesidades y velocidad del tiempo.
+    /// </summary>
+    /// <param name="jugando">True si el minijuego está activo, False si terminó.</param>
+    private void EstadoMinijuego(bool jugando)
     {
-        mecanicaJuego.interactuable = this; // <- le decimos qui�n es el objeto actual
-        mecanicaJuego.gameObject.SetActive(true);
+        if (gM == null)
+        {
+            gM = GameManager.Instance ?? FindObjectOfType<GameManager>();
+            if (gM == null)
+            {
+                Debug.LogWarning("Interactuable: no hay GameManager en la escena.");
+                return;
+            }
+        }
+
+        if (jugando)
+        {
+            // Guardar valores previos antes de modificar
+            prevSegundosXMinutos = gM.SegundosXMinutos;
+            prevHambre = gM.tiempoXHambre;
+            prevSueno = gM.tiempoXSueno;
+            prevDiversion = gM.tiempoXDiversion;
+            prevEstres = gM.tiempoXEstres;
+            prevSocial = gM.tiempoXSocial;
+
+            // Aplica valores pasivos usando presetBase como fallback si el valor es 0
+            gM.SegundosXMinutos = (modificarVelocidadTiempo != 0) ? modificarVelocidadTiempo : presetBase.velocidadTiempoBase;
+            gM.tiempoXHambre = (cambiarHambrePasivo != 0) ? cambiarHambrePasivo : presetBase.hambreBase;
+            gM.tiempoXSueno = (cambiarSuenoPasivo != 0) ? cambiarSuenoPasivo : presetBase.suenoBase;
+            gM.tiempoXDiversion = (cambiarDiversionPasivo != 0) ? cambiarDiversionPasivo : presetBase.diversionBase;
+            gM.tiempoXEstres = (cambiarEstresPasivo != 0) ? cambiarEstresPasivo : presetBase.estresBase;
+            gM.tiempoXSocial = (cambiarSocialPasivo != 0) ? cambiarSocialPasivo : presetBase.socialBase;
+        }
+        else
+        {
+            // Restaurar valores previos
+            gM.SegundosXMinutos = prevSegundosXMinutos;
+            gM.tiempoXHambre = prevHambre;
+            gM.tiempoXSueno = prevSueno;
+            gM.tiempoXDiversion = prevDiversion;
+            gM.tiempoXEstres = prevEstres;
+            gM.tiempoXSocial = prevSocial;
+
+            // Desuscribirse para evitar eventos huérfanos
+            if (suscrito && mecanicaJuego != null)
+            {
+                mecanicaJuego.OnEstadoJuego -= EstadoMinijuego;
+                mecanicaJuego.OnResultado -= CambiarAtributos;
+                suscrito = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Llamar para cancelar la interacción y cerrar la barra.
+    /// </summary>
+    public void NoInteractuar()
+    {
+        if (mecanicaJuego != null)
+            mecanicaJuego.gameObject.SetActive(false);
+
+        EstadoMinijuego(false);
+    }
+
+    /// <summary>
+    /// Asegura desuscripción al destruir el objeto para evitar errores.
+    /// </summary>
+    private void OnDestroy()
+    {
+        if (mecanicaJuego != null)
+        {
+            mecanicaJuego.OnEstadoJuego -= EstadoMinijuego;
+            mecanicaJuego.OnResultado -= CambiarAtributos;
+        }
     }
 }

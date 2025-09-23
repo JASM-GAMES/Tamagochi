@@ -1,40 +1,53 @@
-using System;
+﻿using System;
 using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    public static GameManager Instance { get; private set; }
 
     [Header("Tiempo del Juego")]
     public int minutosActual;  // 0 - 59
     public int horasActual;    // 0 - 23
     public int diaActual;     // 0 en adelante
 
-    [Header("Configuraci�n")]
-    public float segundosXMinutos = 1f; // 1 seg real = 1 min juego
+    [Header("Configuración")]
+    private float segundosXMinutos = 1f; // 1 seg real = 1 min juego
 
     [Header("Referencias")]
     public Estudiante estudiante;
+
+    [Header("Configuración de Necesidades")]
+    public ConfigNecesidades config;
+
+    [HideInInspector] public float SegundosXMinutos;
+    [HideInInspector] public float tiempoXHambre;
+    [HideInInspector] public float tiempoXSueno;
+    [HideInInspector] public float tiempoXDiversion;
+    [HideInInspector] public float tiempoXEstres;
+    [HideInInspector] public float tiempoXSocial;
 
     public ManagerUI UIM;
 
     private float timer;
 
-    private void Awake()
+    //getter y setter
+
+    void Awake()
     {
         if (Instance == null)
-        {
             Instance = this;
-        }
-        else { Destroy(gameObject); 
-        }
-        DontDestroyOnLoad(gameObject);
+        else
+            Destroy(gameObject);
     }
-
+    void Start()
+    {
+        // Inicializa con valores base
+        RestaurarValoresBase();
+    }
     private void Update()
     {
-        // Avanza el tiempo seg�n el deltaTime real
+        // Avanza el tiempo según el deltaTime real
         timer += Time.deltaTime;
 
         if (timer >= segundosXMinutos)
@@ -51,11 +64,11 @@ public class GameManager : MonoBehaviour
     //Disminuye las necesidades del estudiante con el tiempo
     private void DisminuirNecesidadesEstudiante()
     {
-        estudiante.setHambre(estudiante.getHambre() - 5);
-        estudiante.setSueno(estudiante.getSueno() - 2);
-        estudiante.setDiversion(estudiante.getDiversion() - 4);
-        estudiante.setEstres(estudiante.getEstres() - 1);
-        estudiante.setSocial(estudiante.getSocial() - 4);
+        estudiante.Hambre = estudiante.Hambre - tiempoXHambre;
+        estudiante.Sueno = estudiante.Sueno - tiempoXSueno;
+        estudiante.Diversion = estudiante.Diversion - tiempoXDiversion;
+        estudiante.Estres = estudiante.Estres - tiempoXEstres;
+        estudiante.Social = estudiante.Social - tiempoXSocial;
     }
 
     //sirve como un reloj que avanza los minutos, horas y dias
@@ -63,13 +76,12 @@ public class GameManager : MonoBehaviour
     private void AvanzarTiempo()
     {
         minutosActual++;
+        DisminuirNecesidadesEstudiante();
         // lo que pasa cuando se llega a 60 minutos
         if (minutosActual >= 60)
         {
             minutosActual = 0;
             horasActual++;
-            DisminuirNecesidadesEstudiante();
-
             // lo que pasa cuando se llega a 24 horas
             if (horasActual >= 24)
             {
@@ -78,22 +90,21 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
-    // getters y setters
-    public int GetHora() => horasActual;
-    public int GetMinuto() => minutosActual;
-    public int GetDia() => diaActual;
-
-    public void SetHora(int hora) { 
-        horasActual=hora; 
-    }
-    public void SetMinuto(int minuto)
+    public void RestaurarValoresBase()
     {
-        minutosActual = minuto;
-    }
-    public void SetDia(int dia)
-    {
-        diaActual = dia;
-    }
+        if (config == null)
+        {
+            Debug.LogError("⚠ No hay ConfigNecesidades asignado en GameManager.");
+            return;
+        }
 
+        SegundosXMinutos = config.velocidadTiempoBase;
+        tiempoXHambre = config.hambreBase;
+        tiempoXSueno = config.suenoBase;
+        tiempoXDiversion = config.diversionBase;
+        tiempoXEstres = config.estresBase;
+        tiempoXSocial = config.socialBase;
+    }
 }
+
+

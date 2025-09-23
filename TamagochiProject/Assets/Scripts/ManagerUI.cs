@@ -26,19 +26,19 @@ public class ManagerUI : MonoBehaviour
 
     public void actualizarTiempo()
     {
-        minuto = gameManager.GetMinuto().ToString();
-        hora = gameManager.GetHora().ToString();
-        dia = gameManager.GetDia().ToString();
-        textoTiempo.text = $"Día: {gameManager.GetDia()+1} - {gameManager.GetHora():00}:{gameManager.GetMinuto():00}";
+        minuto = gameManager.minutosActual.ToString();
+        hora = gameManager.horasActual.ToString();
+        dia = gameManager.diaActual.ToString();
+        textoTiempo.text = $"Día: {gameManager.diaActual+1} - {gameManager.horasActual:00}:{gameManager.minutosActual:00}";
     }
 
     public void actualizarNecesidades()
     {
-        sliderHambre.value = estudiante.getHambre();
-        sliderSueno.value = estudiante.getSueno();
-        sliderDiversion.value = estudiante.getDiversion();
-        sliderEstres.value = estudiante.getEstres();
-        sliderSocial.value = estudiante.getSocial();
+        sliderHambre.value = estudiante.Hambre;
+        sliderSueno.value = estudiante.Sueno;
+        sliderDiversion.value = estudiante.Diversion;
+        sliderEstres.value = estudiante.Estres;
+        sliderSocial.value = estudiante.Social;
     }
 
     public void activarMecanicaBarra()
