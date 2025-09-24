@@ -1,22 +1,16 @@
-ï»¿using UnityEngine;
+using UnityEngine;
 using System;
-
-/// <summary>
-/// Script para objetos interactuables que lanzan minijuegos de barra (MecanicaJuego)
-/// y afectan las necesidades del estudiante. Compatible con ScriptableObjects
-/// para valores base de las necesidades y velocidad de tiempo.
-/// </summary>
-public class Interactuable : MonoBehaviour
+public class InteractuableEstudio : MonoBehaviour
 {
     [Header("Refs")]
-    public MecanicaJuego mecanicaJuego;      
+    public MecanicaEstudio mecanicaEstudio;
     public Estudiante estudiante;
     public GameManager gM;
 
     [Header("Modificar Velocidad Tiempo")]
     public float modificarVelocidadTiempo;
 
-    [Header("Cambios en necesidades por Ã©xito")]
+    [Header("Cambios en necesidades por éxito")]
     public int cambiarHambreExito;
     public int cambiarSuenoExito;
     public int cambiarDiversionExito;
@@ -30,7 +24,7 @@ public class Interactuable : MonoBehaviour
     public int cambiarEstresFracaso;
     public int cambiarSocialFracaso;
 
-    [Header("Cambios en necesidades pasivos durante la interacciÃ³n")]
+    [Header("Cambios en necesidades pasivos durante la interacción")]
     public float cambiarHambrePasivo;
     public float cambiarSuenoPasivo;
     public float cambiarDiversionPasivo;
@@ -56,35 +50,35 @@ public class Interactuable : MonoBehaviour
 
     /// <summary>
     /// Llamado por el Player cuando presiona E frente al objeto.
-    /// Inicia la mecÃ¡nica y suscribe eventos.
+    /// Inicia la mecánica y suscribe eventos.
     /// </summary>
     public void Interactuar()
     {
-        if (mecanicaJuego == null)
+        if (mecanicaEstudio == null)
         {
             Debug.LogWarning("Interactuable: falta referencia a MecanicaJuego en " + name);
             return;
         }
 
-        mecanicaJuego.interactuable = this;
+        mecanicaEstudio.interactuableE = this;
 
-        // Suscribirse solo si no estÃ¡ suscrito
+        // Suscribirse solo si no está suscrito
         if (!suscrito)
         {
-            mecanicaJuego.OnEstadoJuego += EstadoMinijuego;
-            mecanicaJuego.OnResultado += CambiarAtributos;
+            mecanicaEstudio.OnEstadoJuego += EstadoMinijuego;
+            mecanicaEstudio.OnResultado += CambiarAtributos;
             suscrito = true;
         }
 
-        // Activar la mecÃ¡nica (OnEnable -> IniciarMinijuego)
-        mecanicaJuego.gameObject.SetActive(true);
+        // Activar la mecánica (OnEnable -> IniciarMinijuego)
+        mecanicaEstudio.gameObject.SetActive(true);
     }
 
     /// <summary>
-    /// MÃ©todo que se ejecuta cuando la barra da resultado de Ã©xito o fracaso.
-    /// Modifica las necesidades del estudiante segÃºn el resultado.
+    /// Método que se ejecuta cuando la barra da resultado de éxito o fracaso.
+    /// Modifica las necesidades del estudiante según el resultado.
     /// </summary>
-    /// <param name="exito">True si la barra fue exitosa, False si fallÃ³.</param>
+    /// <param name="exito">True si la barra fue exitosa, False si falló.</param>
     public void CambiarAtributos(bool exito)
     {
         if (estudiante == null)
@@ -125,6 +119,9 @@ public class Interactuable : MonoBehaviour
 
         if (jugando)
         {
+            // Asigna un valor a la barra de progreso de estudio
+
+
             // Guardar valores previos antes de modificar
             prevSegundosXMinutos = gM.segundosXMinutos;
             prevHambre = gM.tiempoXHambre;
@@ -151,36 +148,36 @@ public class Interactuable : MonoBehaviour
             gM.tiempoXEstres = prevEstres;
             gM.tiempoXSocial = prevSocial;
 
-            // Desuscribirse para evitar eventos huÃ©rfanos
-            if (suscrito && mecanicaJuego != null)
+            // Desuscribirse para evitar eventos huérfanos
+            if (suscrito && mecanicaEstudio != null)
             {
-                mecanicaJuego.OnEstadoJuego -= EstadoMinijuego;
-                mecanicaJuego.OnResultado -= CambiarAtributos;
+                mecanicaEstudio.OnEstadoJuego -= EstadoMinijuego;
+                mecanicaEstudio.OnResultado -= CambiarAtributos;
                 suscrito = false;
             }
         }
     }
 
     /// <summary>
-    /// Llamar para cancelar la interacciÃ³n y cerrar la barra.
+    /// Llamar para cancelar la interacción y cerrar la barra.
     /// </summary>
     public void NoInteractuar()
     {
-        if (mecanicaJuego != null)
-            mecanicaJuego.gameObject.SetActive(false);
+        if (mecanicaEstudio != null)
+            mecanicaEstudio.gameObject.SetActive(false);
 
         EstadoMinijuego(false);
     }
 
     /// <summary>
-    /// Asegura desuscripciÃ³n al destruir el objeto para evitar errores.
+    /// Asegura desuscripción al destruir el objeto para evitar errores.
     /// </summary>
     private void OnDestroy()
     {
-        if (mecanicaJuego != null)
+        if (mecanicaEstudio != null)
         {
-            mecanicaJuego.OnEstadoJuego -= EstadoMinijuego;
-            mecanicaJuego.OnResultado -= CambiarAtributos;
+            mecanicaEstudio.OnEstadoJuego -= EstadoMinijuego;
+            mecanicaEstudio.OnResultado -= CambiarAtributos;
         }
     }
 
