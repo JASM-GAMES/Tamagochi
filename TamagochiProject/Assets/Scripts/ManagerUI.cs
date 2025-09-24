@@ -11,6 +11,7 @@ public class ManagerUI : MonoBehaviour
 
     public Image zonaVerde;
     public Slider sliderMecanicaBarra;
+    public Slider sliderBarraEstudiante;
 
     public Slider sliderHambre;
     public Slider sliderSueno;
@@ -49,6 +50,16 @@ public class ManagerUI : MonoBehaviour
     public void desactivarMecanicaBarra()
     {
         sliderMecanicaBarra.gameObject.SetActive(false);
+    }
+
+    public void activarMecanicaEstudiante()
+    {
+        sliderBarraEstudiante.gameObject.SetActive(true);
+    }
+
+    public void desactivarMecanicaEstudiante()
+    {
+        sliderBarraEstudiante.gameObject.SetActive(false);
     }
 
     public void activarMensajeInteractuar()
