@@ -37,6 +37,9 @@ public class Interactuable : MonoBehaviour
     public float cambiarEstresPasivo;
     public float cambiarSocialPasivo;
 
+    [Header("Activar barra de estudio")]
+    public bool estudiando;
+
     // flags internos
     private bool suscrito = false;
 
@@ -183,4 +186,6 @@ public class Interactuable : MonoBehaviour
             mecanicaJuego.OnResultado -= CambiarAtributos;
         }
     }
+
+
 }

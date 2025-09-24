@@ -1,16 +1,23 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class MecanicaEstudio : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
-        
+        PunteroMouseVisible(true);  
     }
-
-    // Update is called once per frame
-    void Update()
+    // Si quieres que simplemente desaparezca el objeto:
+    public void DesactivarCirculo()
     {
-        
+        // Desactiva el objeto para que desaparezca de la UI
+        gameObject.SetActive(false);
+
+        // Si quieres hacer algo más, por ejemplo sumar puntos:
+        Debug.Log("¡Círculo clickeado!");
+    }
+    public void PunteroMouseVisible(bool visible)
+    {
+        Cursor.visible = visible;
+        Cursor.lockState = visible ? CursorLockMode.None : CursorLockMode.Locked;
     }
 }
