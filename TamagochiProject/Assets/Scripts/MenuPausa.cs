@@ -1,46 +1,50 @@
-Ôªøusing UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MenuPausa : MonoBehaviour
 {
-    [Header("Pausa")]
-    public GameObject Pausa;
-
+    public GameObject menuPausa; // Arrastra el Canvas Pausa aquÌ
     private bool juegoPausado = false;
 
     void Update()
     {
+        // Detectar la tecla ESC
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (juegoPausado)
+            {
                 Reanudar();
+            }
             else
+            {
                 Pausar();
+            }
         }
     }
 
-    public void Pausar()
+    void Pausar()
     {
-        Pausa.SetActive(true); // Activa el Canvas
-        Time.timeScale = 0f;         // Detiene el tiempo del juego
+        menuPausa.SetActive(true);  // Mostrar men˙
+        Time.timeScale = 0f;        // Detener el tiempo del juego
         juegoPausado = true;
     }
 
-    public void Reanudar()
+    void Reanudar()
     {
-        Pausa.SetActive(false); // Desactiva el Canvas
-        Time.timeScale = 1f;          // Restaura el tiempo del juego
+        menuPausa.SetActive(false); // Ocultar men˙
+        Time.timeScale = 1f;        // Reanudar el tiempo
         juegoPausado = false;
     }
 
-    public void IrAlMenuPrincipal()
+    public void IrAlMenu()
     {
-        
-        SceneManager.LoadScene("Menu"); // ‚ö†Ô∏è cambia "MenuPrincipal" por el nombre real de tu escena
+        Time.timeScale = 1f; // Asegurar que el tiempo vuelve a la normalidad
+        SceneManager.LoadScene("Menu"); // Nombre exacto de tu escena del men˙ principal
     }
 
-    public void Opciones()
+    public void AbrirOpciones()
     {
-        Debug.Log("Men√∫ de opciones abierto (por implementar)");
+        Debug.Log("AquÌ puedes abrir un panel de opciones");
+        // Si quieres, m·s adelante puedes activar otro panel con configuraciones
     }
 }
