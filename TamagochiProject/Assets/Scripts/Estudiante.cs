@@ -97,7 +97,7 @@ public class Estudiante : MonoBehaviour
     public void SumarBarraHambre() { hambre += 10; }
     public void SumarBarraDiversion() { diversion += 10; }
     public void SumarBarraEstres() { estres += 10; }
-    public void SumarBarraSocial() { social -= 10; }
+    public void SumarBarraSocial() { social += 10; }
     public void RestarBarraSueno() { sueno -= 10; }
     public void RestarBarraHambre() { hambre -= 10; }
     public void RestarBarraDiversion() { diversion -= 10; }
