@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Interacción")]
     public float distanciaInteraccion = 3f; // hasta dónde puede interactuar
-    private Interactuable interactuableActual;
+    public Interactuable interactuableActual;
 
     [Header("Opciones")]
     public bool bloquearCursor = true;
@@ -77,26 +77,37 @@ public class PlayerController : MonoBehaviour
 
     private void DetectarInteractuable()
     {
+        Interactuable nuevoInteractuable = null;
         RaycastHit hit;
+
+        // Opcional: usa una LayerMask para solo raycastear interactuables
+        // if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, distanciaInteraccion, capaInteractuables))
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, distanciaInteraccion))
         {
-            if (hit.collider.TryGetComponent(out Interactuable interactuable))
+            hit.collider.TryGetComponent(out nuevoInteractuable);
+        }
+
+        // Si cambió el objeto en la mira
+        if (nuevoInteractuable != interactuableActual)
+        {
+            if (interactuableActual != null)
             {
-                if (interactuable != interactuableActual)
-                {
-                    interactuableActual = interactuable;
-                    Debug.Log("Mirando interactuable: " + interactuable.name);
-                    mui.activarMensajeInteractuar();
-                }
-                return;
+                interactuableActual.CancelarInteraccion(); // opcional: cancelar lógica en la mecánica
+                mui.desactivarMensajeInteractuar();
+            }
+
+            interactuableActual = nuevoInteractuable;
+
+            if (interactuableActual != null)
+            {
+                Debug.Log("Mirando interactuable: " + interactuableActual.name);
+                mui.activarMensajeInteractuar();
             }
         }
 
-        // Si no estamos mirando un interactuable
-        if (interactuableActual != null)
+        // Opcional: asegurar que si no hay ninguno, el mensaje esté oculto
+        if (nuevoInteractuable == null && interactuableActual == null)
         {
-            interactuableActual = null;
-            Debug.Log("Ya no miro interactuable");
             mui.desactivarMensajeInteractuar();
         }
     }

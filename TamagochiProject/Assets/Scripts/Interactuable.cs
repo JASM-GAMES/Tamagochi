@@ -1,7 +1,7 @@
 ﻿using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
-
 /// <summary>
 /// Interactuable: componente simple que:
 /// - dispara onInteract cuando el jugador presiona E (desde PlayerController).
@@ -10,12 +10,15 @@ using UnityEngine.Events;
 /// </summary>
 public class Interactuable : MonoBehaviour
 {
+    ObjetivosManager objetivosManager;
+    public ManagerUI UIM;
+
     [Header("Mecánica (arrastrar el componente que implemente IMecanica)")]
     public MonoBehaviour mecanicaComponent; // arrastra aquí MecanicaJuego (u otra mecánica)
 
     [Header("Opcionales: overrides para esta interacción (pasa 0 para no override)")]
     public float overrideTamañoZona = 0f;
-    public float overrideVelocidadBarra = 0f;
+    public float overrideVelocidadBarra = 1f;
 
     [Header("Eventos (Inspector)")]
     public UnityEvent onInteract;   // se llama en cuanto el jugador interactúa (antes de iniciar)
@@ -26,6 +29,7 @@ public class Interactuable : MonoBehaviour
 
     IMecanica mecanica; // referencia casteada a la interfaz
     bool suscrito = false;
+    bool suscritoObjetivo = false;
 
     /// <summary>
     /// Método público que debe llamar PlayerController al apretar E.
@@ -41,7 +45,7 @@ public class Interactuable : MonoBehaviour
 
         if (mecanica == null)
         {
-            // no hay mecánica; se quedan solo los UnityEvents (por ejemplo, un interruptor simple)
+            // no hay mecánica; se quedan solo los UnityEvents
             Debug.Log($"[Interactuable] {name}: no hay mecánica, disparando onStart/onEnd directamente.");
             onStart?.Invoke();
             onEnd?.Invoke();
@@ -56,13 +60,21 @@ public class Interactuable : MonoBehaviour
             suscrito = true;
         }
 
-        // construimos nullables para overrides (0 = no override)
-        float? tOverride = (overrideTamañoZona > 0f) ? (float?)overrideTamañoZona : null;
-        float? vOverride = (overrideVelocidadBarra > 0f) ? (float?)overrideVelocidadBarra : null;
+        // --- NUEVO: aseguramos referencia a ObjetivosManager ---
+#if UNITY_2023_1_OR_NEWER
+        if (objetivosManager == null) objetivosManager = FindFirstObjectByType<ObjetivosManager>();
+#else
+    if (objetivosManager == null) objetivosManager = FindObjectOfType<ObjetivosManager>();
+#endif
+        // --- FIN NUEVO ---
 
-        // iniciar la mecánica, pasando este interactuable como owner
+        // construimos nullables para overrides
+        float? tOverride = (overrideTamañoZona > 0f) ? (float?)overrideTamañoZona : null;
+        float? vOverride = 1f + (objetivosManager != null ? objetivosManager.dificultad : 0f);
+
+        // iniciar la mecánica
         mecanica.StartFor(this, tOverride, vOverride);
-    }
+    }   
 
     void HandleEstado(bool jugando)
     {
@@ -102,4 +114,12 @@ public class Interactuable : MonoBehaviour
 
     void OnDisable() => Unsubscribe();
     void OnDestroy() => Unsubscribe();
+
+    public void aumentarVelocidadBarra(bool dificultad)
+    {
+        overrideVelocidadBarra += objetivosManager.dificultad + .1f;
+        Debug.Log(overrideVelocidadBarra);
+        overrideVelocidadBarra = overrideVelocidadBarra*4;
+        Debug.Log(overrideVelocidadBarra);
+    }
 }

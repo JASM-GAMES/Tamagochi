@@ -53,7 +53,46 @@ public class Estudiante : MonoBehaviour
         //social
         social = Mathf.Clamp(social, 0, 100);
     }
+    public void LimiteNecesidades()
+    {
+        if (hambre <= 0 || sueno <= 0 || diversion <= 0 || estres <= 0 || social <= 0)
+        {
+            // Muestra panel fade
+            UIM.activarPanelFadeOut();
 
+            // Reinicia necesidades
+            hambre = 20;
+            sueno = 20;
+            diversion = 20;
+            estres = 20;
+            social = 20;
+
+            // --- NUEVO: empujar al jugador un poco ---
+            if (UIM != null && UIM.playerController != null)
+            {
+                var player = UIM.playerController;
+                Rigidbody rb = player.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    // mueve medio metro hacia atrás respecto a su forward actual
+                    Vector3 empuje = -player.transform.forward * 0.5f;
+                    rb.MovePosition(rb.position + empuje);
+                }
+
+                // si está interactuando con algo, cancela la interacción para que se suelte
+                // (necesitas exponer interactuableActual como público en PlayerController)
+                if (player.interactuableActual != null)
+                {
+                    player.interactuableActual.CancelarInteraccion();
+                }
+            }
+        }
+    }
+    public bool PuedeEstudiar()
+    {
+        // devuelve true solo si todas las necesidades están por encima de 40
+        return hambre > 40 && sueno > 40 && diversion > 40 && estres > 40 && social > 40;
+    }
     public void SumarBarraSueno() { sueno += 10; }
     public void SumarBarraHambre() { hambre += 10; }
     public void SumarBarraDiversion() { diversion += 10; }
