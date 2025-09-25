@@ -1,127 +1,150 @@
 ﻿using System;
 using UnityEngine;
 
-public class MecanicaJuego : MonoBehaviour
+/// <summary>
+/// Minijuego de barra (ping-pong). Implementa IMecanica.
+/// - Emite OnEstadoJuego(true/false) y OnResultado(true/false).
+/// - StartFor(owner, overrides...) inicia la sesión para ese interactuable.
+/// - Por defecto termina la sesión cuando el jugador presiona la tecla (terminarAlPresionar = true).
+/// </summary>
+public class MecanicaJuego : MonoBehaviour, IMecanica
 {
-    public ManagerUI UIM; // Reference to the ManagerUI script
-    public Interactuable interactuable; // Reference to the Interactuable script
+    [Header("UI")]
+    public ManagerUI UIM; // slider y zona verde (puede ser null para probar sin UI)
 
-    public float inicioZona = 0.4f; // Duration of the mechanic in seconds
-    public float tamañoZona = 0.2f; 
-    public float velocidadBarra = 0.5f; // Speed of the moving zone
-    public int direccionBarra = 1;
+    [Header("Parámetros por defecto (0..1)")]
+    public float inicioZona = 0.4f;
+    public float tamañoZona = 0.2f;
+    public float velocidadBarra = 0.5f; // unidades relativas por segundo
+    public bool terminarAlPresionar = true; // si true, un press termina la sesión
 
-    private bool exito;
+    // eventos públicos (IMecanica)
+    public event Action<bool> OnResultado;
+    public event Action<bool> OnEstadoJuego;
 
-    private float valorActual;
-    private bool jugando;
+    // info de la sesión
+    public Interactuable Owner { get; private set; }
+    bool jugando = false;
+    float valorActual = 0f;
+    int direccion = 1;
 
-    // EVENTOS 🚀
-    public event Action<bool> OnResultado; // true = éxito, false = fracaso
-    public event Action<bool> OnEstadoJuego; // true = empezó, false = terminó
+    // overrides temporales
+    float prevTamaño;
+    float prevVelocidad;
+    bool hadOverrides = false;
 
-    public bool Jugando => jugando; // 👈 Propiedad para saber si está en juego desde fuera
-
-    public bool getExito()
+    // -------- API simple --------
+    // Llamar desde Interactuable: mecanica.StartFor(this, overrideTamaño, overrideVel);
+    public void StartFor(Interactuable owner, float? overrideTamañoZona = null, float? overrideVelocidadBarra = null)
     {
-        return exito;
+        // si ya hay una sesión activa, cancela (evita doble uso)
+        if (jugando)
+            Cancelar();
+
+        Owner = owner;
+
+        // aplicar overrides si vienen
+        if (overrideTamañoZona.HasValue || overrideVelocidadBarra.HasValue)
+        {
+            prevTamaño = tamañoZona;
+            prevVelocidad = velocidadBarra;
+            hadOverrides = true;
+
+            if (overrideTamañoZona.HasValue) tamañoZona = Mathf.Clamp01(overrideTamañoZona.Value);
+            if (overrideVelocidadBarra.HasValue) velocidadBarra = Mathf.Max(0.0001f, overrideVelocidadBarra.Value);
+        }
+
+        // activa el panel (si está desactivado)
+        gameObject.SetActive(true);
+
+        // iniciar la sesión
+        IniciarMinijuego();
     }
 
-    public void setExito(bool valor)
+    public void Cancelar()
     {
-        exito = valor;
+        // terminar sin éxito
+        TerminarMinijuego(false);
     }
 
-    void OnEnable()
+    // -------- lógica interna --------
+    void IniciarMinijuego()
     {
-        IniciarMinijuego(); // 👈 cada vez que el objeto se activa, reinicia todo
+        valorActual = 0f;
+        direccion = 1;
+        jugando = true;
+        ActualizarZonaVerde();
+        OnEstadoJuego?.Invoke(true); // aviso que arrancó
     }
 
-    void OnDisable()
-    {
-        jugando = false;
-        OnEstadoJuego?.Invoke(false); // 👈 avisa que terminó
-    }
     void Update()
     {
         if (!jugando) return;
 
-        // Movimiento ping-pong del cursor
-        valorActual += direccionBarra * velocidadBarra * Time.deltaTime;
+        // mover cursor
+        valorActual += direccion * velocidadBarra * Time.deltaTime;
+        if (valorActual >= 1f) { valorActual = 1f; direccion = -1; }
+        else if (valorActual <= 0f) { valorActual = 0f; direccion = 1; }
 
-        // Si llega a los extremos, cambia dirección
-        if (valorActual >= 1f)
-        {
-            valorActual = 1f;
-            direccionBarra = -1;
-        }
-        else if (valorActual <= 0f)
-        {
-            valorActual = 0f;
-            direccionBarra = 1;
-        }
+        if (UIM != null && UIM.sliderMecanicaBarra != null)
+            UIM.sliderMecanicaBarra.value = valorActual;
 
-        UIM.sliderMecanicaBarra.value = valorActual;
-
-        // Tecla de interacción
+        // input para chequear resultado
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            ChequearResultado();
-            Debug.Log(exito ? "¡Éxito!" : "Fallaste");
+            bool exitoActual = ChequearResultadoLocal();
+            OnResultado?.Invoke(exitoActual);
+
+            if (terminarAlPresionar)
+                TerminarMinijuego(exitoActual);
+            else
+                ActualizarZonaVerde(); // si no termina, genera nueva zona
         }
 
+        // ejemplo simple: cancelar si el jugador se mueve (puedes quitarlo y que el Interactuable lo maneje)
         if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
-            CancelarMinijuego();
+            Cancelar();
     }
 
-    public void IniciarMinijuego()
+    // devuelve si es exito
+    bool ChequearResultadoLocal()
     {
-        valorActual = 0f;
-        direccionBarra = 1;
-        jugando = true;
-        ActualizarZonaVerde();
-        OnEstadoJuego?.Invoke(true); // Aviso: empezó el minijuego
+        return valorActual >= inicioZona && valorActual <= inicioZona + tamañoZona;
     }
 
-    private void ActualizarZonaVerde()
+    void ActualizarZonaVerde()
     {
-        inicioZona = UnityEngine.Random.Range(0f, 1f - tamañoZona);
-
-        if (UIM.zonaVerde != null)
+        inicioZona = UnityEngine.Random.Range(0f, Mathf.Max(0f, 1f - tamañoZona));
+        if (UIM != null && UIM.zonaVerde != null)
         {
             RectTransform rt = UIM.zonaVerde.rectTransform;
-
             float parentWidth = rt.parent.GetComponent<RectTransform>().rect.width;
             float width = parentWidth * tamañoZona;
             float posX = parentWidth * inicioZona;
-
             rt.sizeDelta = new Vector2(width, rt.sizeDelta.y);
             rt.anchoredPosition = new Vector2(posX, rt.anchoredPosition.y);
-            Debug.Log($"Zona verde movida: inicio={inicioZona:F2}, posX={rt.anchoredPosition.x}, width={rt.sizeDelta.x}");
+        }
+    }
+
+    public void TerminarMinijuego(bool exitoFinal)
+    {
+        // avisos
+        OnResultado?.Invoke(exitoFinal);
+        OnEstadoJuego?.Invoke(false);
+
+        jugando = false;
+
+        // restaurar overrides si los hubo
+        if (hadOverrides)
+        {
+            tamañoZona = prevTamaño;
+            velocidadBarra = prevVelocidad;
+            hadOverrides = false;
         }
 
-    }
+        Owner = null;
 
-    private void ChequearResultado()
-    {
-        bool exitoActual = valorActual >= inicioZona && valorActual <= inicioZona + tamañoZona;
-        exito = exitoActual;
-
-        Debug.Log(exito ? "¡Éxito!" : "Fallaste");
-        ActualizarZonaVerde();
-
-        // 🚀 Disparamos el evento con el resultado
-        OnResultado?.Invoke(exito);
-    }
-    public void CancelarMinijuego()
-    {
-        gameObject.SetActive(false); // 👈 desactiva el objeto → llama OnDisable()
-    }
-    private void TerminarMinijuego(bool exito)
-    {
-        jugando = false;
-        Debug.Log(exito ? "Minijuego completado" : "Minijuego fallido");
-        // Aquí podrías avisar al GameManager del resultado
+        // desactiva panel para que vuelva al estado original
         gameObject.SetActive(false);
     }
 }

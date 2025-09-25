@@ -38,9 +38,6 @@ public class Estudiante : MonoBehaviour
     private void Update()
     {
     }
-
-
-
     public void validarAtrinutos() 
     {
         // Mathf.Clamp() cumple la misma funcion que un if, pero en una sola linea de codigo, es mas efectivo para mantener valores en un establecido
@@ -56,5 +53,16 @@ public class Estudiante : MonoBehaviour
         //social
         social = Mathf.Clamp(social, 0, 100);
     }
+
+    public void SumarBarraSueno() { sueno += 10; }
+    public void SumarBarraHambre() { hambre += 10; }
+    public void SumarBarraDiversion() { diversion += 10; }
+    public void SumarBarraEstres() { estres += 10; }
+    public void SumarBarraSocial() { social -= 10; }
+    public void RestarBarraSueno() { sueno -= 10; }
+    public void RestarBarraHambre() { hambre -= 10; }
+    public void RestarBarraDiversion() { diversion -= 10; }
+    public void RestarBarraEstres() { estres -= 10; }
+    public void RestarBarraSocial() { social -= 10; }
 
 }

@@ -47,11 +47,10 @@ public class GameManager : MonoBehaviour
             AvanzarTiempo();
             timer = 0f;
         }
-        
-
         // Se conecta al UI
         UIM.actualizarTiempo();
         UIM.actualizarNecesidades();
+        UIM.actualizarBarraEstudio();
     }
     //Disminuye las necesidades del estudiante con el tiempo
     private void DisminuirNecesidadesEstudiante()
@@ -81,6 +80,26 @@ public class GameManager : MonoBehaviour
                 diaActual++;
             }
         }
+    }
+    public void ModificarTiempo(float nuevoTiempo)
+    {
+        segundosXMinutos = nuevoTiempo;
+    }
+    public void ModificarNecesidades(float hambre,float sueno,float diversion,float estres,float social)
+    {
+    tiempoXHambre=hambre;
+    tiempoXSueno=sueno;
+    tiempoXDiversion= diversion;
+    tiempoXEstres= estres;
+    tiempoXSocial= social;
+}
+    public void GuardarNecesidadesIniciales()
+    {
+        float refTiempoXHambre = tiempoXHambre;
+        float refTiempoXSueno = tiempoXSueno;
+        float refTiempoXDiversion = tiempoXDiversion;
+        float refTiempoXEstres = tiempoXEstres;
+        float refTiempoXSocial = tiempoXSocial;
     }
 }
 

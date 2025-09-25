@@ -1,188 +1,105 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
-/// Script para objetos interactuables que lanzan minijuegos de barra (MecanicaJuego)
-/// y afectan las necesidades del estudiante. Compatible con ScriptableObjects
-/// para valores base de las necesidades y velocidad de tiempo.
+/// Interactuable: componente simple que:
+/// - dispara onInteract cuando el jugador presiona E (desde PlayerController).
+/// - si tiene una mecánica (implementando IMecanica), la inicia y se suscribe a sus eventos.
+/// - reenvía Start/Result/End como UnityEvents para que conectes GameManager/Estudiante desde el Inspector.
 /// </summary>
 public class Interactuable : MonoBehaviour
 {
-    [Header("Refs")]
-    public MecanicaJuego mecanicaJuego;      
-    public Estudiante estudiante;
-    public GameManager gM;
+    [Header("Mecánica (arrastrar el componente que implemente IMecanica)")]
+    public MonoBehaviour mecanicaComponent; // arrastra aquí MecanicaJuego (u otra mecánica)
 
-    [Header("Modificar Velocidad Tiempo")]
-    public float modificarVelocidadTiempo;
+    [Header("Opcionales: overrides para esta interacción (pasa 0 para no override)")]
+    public float overrideTamañoZona = 0f;
+    public float overrideVelocidadBarra = 0f;
 
-    [Header("Cambios en necesidades por éxito")]
-    public int cambiarHambreExito;
-    public int cambiarSuenoExito;
-    public int cambiarDiversionExito;
-    public int cambiarEstresExito;
-    public int cambiarSocialExito;
+    [Header("Eventos (Inspector)")]
+    public UnityEvent onInteract;   // se llama en cuanto el jugador interactúa (antes de iniciar)
+    public UnityEvent onStart;      // cuando la mecánica avisa que arrancó
+    public UnityEvent onSuccess;    // resultado éxito
+    public UnityEvent onFail;       // resultado fallo
+    public UnityEvent onEnd;        // cuando la mecánica termina/sea cancelada
 
-    [Header("Cambios en necesidades por fracaso")]
-    public int cambiarHambreFracaso;
-    public int cambiarSuenoFracaso;
-    public int cambiarDiversionFracaso;
-    public int cambiarEstresFracaso;
-    public int cambiarSocialFracaso;
-
-    [Header("Cambios en necesidades pasivos durante la interacción")]
-    public float cambiarHambrePasivo;
-    public float cambiarSuenoPasivo;
-    public float cambiarDiversionPasivo;
-    public float cambiarEstresPasivo;
-    public float cambiarSocialPasivo;
-
-    // flags internos
-    private bool suscrito = false;
-
-    // Guardar valores previos para restaurar
-    private float prevSegundosXMinutos;
-    private float prevHambre, prevSueno, prevDiversion, prevEstres, prevSocial;
-
-    // Autoasignar GameManager si es null
-
-
-    private void Awake()
-    {
-        // Intentar encontrar el GameManager en la escena
-        if (gM == null)
-            gM = GameManager.Instance ?? FindFirstObjectByType<GameManager>();
-    }
+    IMecanica mecanica; // referencia casteada a la interfaz
+    bool suscrito = false;
 
     /// <summary>
-    /// Llamado por el Player cuando presiona E frente al objeto.
-    /// Inicia la mecánica y suscribe eventos.
+    /// Método público que debe llamar PlayerController al apretar E.
     /// </summary>
     public void Interactuar()
     {
-        if (mecanicaJuego == null)
+        onInteract?.Invoke();
+
+        // intentar obtener la interfaz IMecanica desde el componente arrastrado
+        mecanica = mecanicaComponent as IMecanica;
+        if (mecanica == null && mecanicaComponent != null)
+            mecanica = mecanicaComponent.GetComponent(typeof(IMecanica)) as IMecanica;
+
+        if (mecanica == null)
         {
-            Debug.LogWarning("Interactuable: falta referencia a MecanicaJuego en " + name);
+            // no hay mecánica; se quedan solo los UnityEvents (por ejemplo, un interruptor simple)
+            Debug.Log($"[Interactuable] {name}: no hay mecánica, disparando onStart/onEnd directamente.");
+            onStart?.Invoke();
+            onEnd?.Invoke();
             return;
         }
 
-        mecanicaJuego.interactuable = this;
-
-        // Suscribirse solo si no está suscrito
+        // suscribirse a eventos de la mecánica (una sola vez)
         if (!suscrito)
         {
-            mecanicaJuego.OnEstadoJuego += EstadoMinijuego;
-            mecanicaJuego.OnResultado += CambiarAtributos;
+            mecanica.OnEstadoJuego += HandleEstado;
+            mecanica.OnResultado += HandleResultado;
             suscrito = true;
         }
 
-        // Activar la mecánica (OnEnable -> IniciarMinijuego)
-        mecanicaJuego.gameObject.SetActive(true);
+        // construimos nullables para overrides (0 = no override)
+        float? tOverride = (overrideTamañoZona > 0f) ? (float?)overrideTamañoZona : null;
+        float? vOverride = (overrideVelocidadBarra > 0f) ? (float?)overrideVelocidadBarra : null;
+
+        // iniciar la mecánica, pasando este interactuable como owner
+        mecanica.StartFor(this, tOverride, vOverride);
     }
 
-    /// <summary>
-    /// Método que se ejecuta cuando la barra da resultado de éxito o fracaso.
-    /// Modifica las necesidades del estudiante según el resultado.
-    /// </summary>
-    /// <param name="exito">True si la barra fue exitosa, False si falló.</param>
-    public void CambiarAtributos(bool exito)
+    void HandleEstado(bool jugando)
     {
-        if (estudiante == null)
-        {
-            Debug.LogWarning("Interactuable: falta referencia a Estudiante en " + name);
-            return;
-        }
-
-        if (exito)
-        {
-            estudiante.Hambre += cambiarHambreExito;
-            estudiante.Sueno += cambiarSuenoExito;
-            estudiante.Diversion += cambiarDiversionExito;
-            estudiante.Estres += cambiarEstresExito;
-            estudiante.Social += cambiarSocialExito;
-        }
+        if (jugando) onStart?.Invoke();
         else
         {
-            estudiante.Hambre -= cambiarHambreFracaso;
-            estudiante.Sueno -= cambiarSuenoFracaso;
-            estudiante.Diversion -= cambiarDiversionFracaso;
-            estudiante.Estres -= cambiarEstresFracaso;
-            estudiante.Social -= cambiarSocialFracaso;
+            onEnd?.Invoke();
+            Unsubscribe();
         }
     }
 
-    private void EstadoMinijuego(bool jugando)
+    void HandleResultado(bool exito)
     {
-        if (gM == null)
-        {
-            gM = GameManager.Instance ?? FindFirstObjectByType<GameManager>();
-            if (gM == null)
-            {
-                Debug.LogWarning("Interactuable: no hay GameManager en la escena.");
-                return;
-            }
-        }
-
-        if (jugando)
-        {
-            // Guardar valores previos antes de modificar
-            prevSegundosXMinutos = gM.segundosXMinutos;
-            prevHambre = gM.tiempoXHambre;
-            prevSueno = gM.tiempoXSueno;
-            prevDiversion = gM.tiempoXDiversion;
-            prevEstres = gM.tiempoXEstres;
-            prevSocial = gM.tiempoXSocial;
-
-            // Aplica valores pasivos usando presetBase
-            gM.segundosXMinutos = modificarVelocidadTiempo;
-            gM.tiempoXHambre = cambiarHambrePasivo;
-            gM.tiempoXDiversion = cambiarDiversionPasivo;
-            gM.tiempoXSueno = cambiarSuenoPasivo;
-            gM.tiempoXEstres = cambiarEstresPasivo;
-            gM.tiempoXSocial = cambiarSocialPasivo;
-        }
-        else
-        {
-            // Restaurar valores previos
-            gM.segundosXMinutos = prevSegundosXMinutos;
-            gM.tiempoXHambre = prevHambre;
-            gM.tiempoXSueno = prevSueno;
-            gM.tiempoXDiversion = prevDiversion;
-            gM.tiempoXEstres = prevEstres;
-            gM.tiempoXSocial = prevSocial;
-
-            // Desuscribirse para evitar eventos huérfanos
-            if (suscrito && mecanicaJuego != null)
-            {
-                mecanicaJuego.OnEstadoJuego -= EstadoMinijuego;
-                mecanicaJuego.OnResultado -= CambiarAtributos;
-                suscrito = false;
-            }
-        }
+        if (exito) onSuccess?.Invoke();
+        else onFail?.Invoke();
     }
 
     /// <summary>
-    /// Llamar para cancelar la interacción y cerrar la barra.
+    /// Llamar para cancelar manualmente la interacción (por ejemplo, si el jugador se mueve).
     /// </summary>
-    public void NoInteractuar()
+    public void CancelarInteraccion()
     {
-        if (mecanicaJuego != null)
-            mecanicaJuego.gameObject.SetActive(false);
-
-        EstadoMinijuego(false);
+        mecanica?.Cancelar();
+        Unsubscribe();
     }
 
-    /// <summary>
-    /// Asegura desuscripción al destruir el objeto para evitar errores.
-    /// </summary>
-    private void OnDestroy()
+    void Unsubscribe()
     {
-        if (mecanicaJuego != null)
+        if (!suscrito) return;
+        if (mecanica != null)
         {
-            mecanicaJuego.OnEstadoJuego -= EstadoMinijuego;
-            mecanicaJuego.OnResultado -= CambiarAtributos;
+            mecanica.OnEstadoJuego -= HandleEstado;
+            mecanica.OnResultado -= HandleResultado;
         }
+        suscrito = false;
     }
 
-
+    void OnDisable() => Unsubscribe();
+    void OnDestroy() => Unsubscribe();
 }
