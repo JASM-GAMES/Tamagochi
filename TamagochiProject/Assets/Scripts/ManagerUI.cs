@@ -6,6 +6,7 @@ public class ManagerUI : MonoBehaviour
 {   
     public Estudiante estudiante;
     public GameManager gameManager;
+    public ObjetivosManager objetivosManager;
 
     public GameObject MensajeInteractuar;
 
@@ -41,7 +42,10 @@ public class ManagerUI : MonoBehaviour
         sliderEstres.value = estudiante.Estres;
         sliderSocial.value = estudiante.Social;
     }
-
+    public void actualizarBarraEstudio()
+    {
+        sliderBarraEstudiante.value = objetivosManager.barraEstudio;
+    }
     public void activarMecanicaBarra()
     {
         sliderMecanicaBarra.gameObject.SetActive(true);
@@ -50,16 +54,6 @@ public class ManagerUI : MonoBehaviour
     public void desactivarMecanicaBarra()
     {
         sliderMecanicaBarra.gameObject.SetActive(false);
-    }
-
-    public void activarMecanicaEstudiante()
-    {
-        sliderBarraEstudiante.gameObject.SetActive(true);
-    }
-
-    public void desactivarMecanicaEstudiante()
-    {
-        sliderBarraEstudiante.gameObject.SetActive(false);
     }
 
     public void activarMensajeInteractuar()
