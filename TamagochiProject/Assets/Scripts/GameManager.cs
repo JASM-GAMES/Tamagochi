@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Referencias")]
     public Estudiante estudiante;
+    public ObjetivosManager objetivosManager;
 
     public float segundosXMinutos;
     public float tiempoXHambre;
@@ -21,9 +22,16 @@ public class GameManager : MonoBehaviour
     public float tiempoXEstres;
     public float tiempoXSocial;
 
+    private float refTiempoXHambre;
+    private float refTiempoXSueno;
+    private float refTiempoXDiversion;
+    private float refTiempoXEstres;
+    private float refTiempoXSocial;
+
     public ManagerUI UIM;
 
     private float timer;
+    public bool universidadActivo=false;
 
     //getter y setter
 
@@ -36,6 +44,7 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
+        GuardarNecesidadesIniciales();
     }
     private void Update()
     {
@@ -68,6 +77,17 @@ public class GameManager : MonoBehaviour
     {
         minutosActual++;
         DisminuirNecesidadesEstudiante();
+        estudiante.LimiteNecesidades();
+        if (horasActual >= 15 && horasActual <= 16)
+        {
+            UIM.activarPanelIrUniversidad();
+            universidadActivo = true;
+        }
+        else
+        {
+            UIM.desactivarPanelIrUniversidad();
+            universidadActivo = false;
+        }
         // lo que pasa cuando se llega a 60 minutos
         if (minutosActual >= 60)
         {
@@ -78,29 +98,30 @@ public class GameManager : MonoBehaviour
             {
                 horasActual = 0;
                 diaActual++;
+                objetivosManager.Examen();
             }
         }
     }
-    public void ModificarTiempo(float nuevoTiempo)
-    {
-        segundosXMinutos = nuevoTiempo;
-    }
-    public void ModificarNecesidades(float hambre,float sueno,float diversion,float estres,float social)
-    {
-    tiempoXHambre=hambre;
-    tiempoXSueno=sueno;
-    tiempoXDiversion= diversion;
-    tiempoXEstres= estres;
-    tiempoXSocial= social;
-}
+    public void ModificarTiempo(float nuevoTiempo){segundosXMinutos = nuevoTiempo;}
+    public void ModificarHambre(float hambre){tiempoXHambre=hambre;}
+    public void modificarSueno(float sueno){tiempoXSueno = sueno;}
+    public void modificarDiversion(float diversion){tiempoXDiversion = diversion;}
+    public void modificarEstres(float estres){tiempoXEstres = estres;}
+    public void modificarSocial(float social){tiempoXSocial = social;}
     public void GuardarNecesidadesIniciales()
     {
-        float refTiempoXHambre = tiempoXHambre;
-        float refTiempoXSueno = tiempoXSueno;
-        float refTiempoXDiversion = tiempoXDiversion;
-        float refTiempoXEstres = tiempoXEstres;
-        float refTiempoXSocial = tiempoXSocial;
+        refTiempoXHambre = tiempoXHambre;
+        refTiempoXSueno = tiempoXSueno;
+        refTiempoXDiversion = tiempoXDiversion;
+        refTiempoXEstres = tiempoXEstres;
+        refTiempoXSocial = tiempoXSocial;
+    }
+    public void CargarNecesidadesIniciales()
+    {
+        tiempoXHambre = refTiempoXHambre;
+        tiempoXSueno = refTiempoXSueno;
+        tiempoXDiversion = refTiempoXDiversion;
+        tiempoXEstres = refTiempoXEstres;
+        tiempoXSocial = refTiempoXSocial;
     }
 }
-
-
