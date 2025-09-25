@@ -99,6 +99,7 @@ public class GameManager : MonoBehaviour
                 horasActual = 0;
                 diaActual++;
                 objetivosManager.Examen();
+                objetivosManager.barraEstudio = 0;
             }
         }
     }

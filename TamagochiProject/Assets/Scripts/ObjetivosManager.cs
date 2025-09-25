@@ -27,7 +27,7 @@ public class ObjetivosManager : MonoBehaviour
         else if (barraEstudio > .5f)
         {
             UIM.activarMensajeAprobaste();
-            dificultad = 1 - barraEstudio; // 👈 sigue igual
+            dificultad = 1 - barraEstudio; 
             Debug.Log("dificultad agregada: " + dificultad);
 
             AumentoDificultad?.Invoke(true);
@@ -40,7 +40,7 @@ public class ObjetivosManager : MonoBehaviour
         {
             UIM.activarPanelFadeOut();
             gM.horasActual = 20;
-            barraEstudio += .2f;
+            barraEstudio += .3f;
         }
         else
         {
